@@ -1,0 +1,11 @@
+{
+  "name": "han",
+  "packageManager": "yarn@3.0.2",
+  "devDependencies": {
+    "@napi-rs/cli": "^1.0.0"
+  },
+  "scripts": {
+    "build": "napi build --release",
+    "build:debug": "napi build"
+  }
+}
