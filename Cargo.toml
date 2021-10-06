@@ -8,8 +8,11 @@ crate-type = ["cdylib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-napi = "1"
 napi-derive = "1"
+napi = {version="1.7.7", features = [ "tokio_rt"] }
+# 启用线程安全功能需要至少启用tokio 包
+# https://github.com/napi-rs/napi-rs/tree/v0.4.1/test_module
+tokio = {version = "1", features = ["default", "fs"]}
 
 [build-dependencies]
 napi-build = "1"
