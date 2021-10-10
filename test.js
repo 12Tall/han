@@ -5,6 +5,6 @@ addon.test_threadsafe_function((err, ...values) => {
     console.log(">> 子线程 <<")
   }
 });
-setInterval(() => {
+setTimeout(() => {
   console.log(" > 主线程 <")
-}, 100);
+}, 10000);

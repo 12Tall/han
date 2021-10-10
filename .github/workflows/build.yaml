@@ -1,0 +1,157 @@
+on: 
+  push:
+    branches:
+      - "master"
+name: build_for_multi-platform
+
+jobs:
+  release-all:
+    name: release
+    needs: [build-mac,build-win,build-ubuntu]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: create release
+        id: create_release
+        uses: actions/create-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false   
+      - uses: actions/download-artifact@v2
+        with: 
+          name: release
+      - name: test
+        run: ls
+      - name: upload macos
+        id: upload-macos 
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release-mac.zip
+          asset_name: release-mac.zip
+          asset_content_type: application/zip  
+      - name: upload win
+        id: upload-windows 
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release-win.zip
+          asset_name: release-win.zip
+          asset_content_type: application/zip  
+      - name: upload ubuntu
+        id: upload-ubuntu 
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./release-ubuntu.zip
+          asset_name: release-ubuntu.zip
+          asset_content_type: application/zip  
+  build-mac:
+    name: build for MacOs
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # 应用二进制依赖库，以节约编译时间
+      # 实践没成功
+      # - name: actions-rs/install@v0.1
+      #   with:
+      #     crate: cargo-audit
+      #     version: latest
+      #     use-tool-cache: true
+      - name: install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with: 
+          toolchain: stable
+      - name: install node/npm
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: build
+        # 编译后在根目录生成index.node
+        run: |
+          npm install          
+          npm run build
+      - name: zip macos artifact
+        run: zip release-mac.zip ./index.node
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: ./release-mac.zip
+
+  build-win:
+    name: build for Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # 应用二进制依赖库，以节约编译时间
+      # 实践没成功
+      # - name: actions-rs/install@v0.1
+      #   with:
+      #     crate: cargo-audit
+      #     version: latest
+      #     use-tool-cache: true
+      - name: install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with: 
+          toolchain: stable
+      - name: install node/npm
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: build
+        # 编译后在根目录生成index.node
+        run: |
+          npm install          
+          npm run build
+      - name: zip windows artifact
+        run: |
+          powershell Compress-Archive ./index.node release-win.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: ./release-win.zip        
+
+  build-ubuntu:
+    name: build for Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # 应用二进制依赖库，以节约编译时间
+      # 实践没成功
+      # - name: actions-rs/install@v0.1
+      #   with:
+      #     crate: cargo-audit
+      #     version: latest
+      #     use-tool-cache: true
+      - name: install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with: 
+          toolchain: stable
+      - name: install node/npm
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: build
+        # 编译后在根目录生成index.node
+        run: |
+          npm install          
+          npm run build
+      - name: zip ubuntu artifact
+        run: zip release-ubuntu.zip ./index.node
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release
+          path: ./release-ubuntu.zip          
