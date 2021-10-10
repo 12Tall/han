@@ -3,11 +3,10 @@ extern crate napi_derive;
 
 // use napi::bindgen_prelude::*;
 use napi::{
-    threadsafe_function::{ThreadSafeCallContext, ThreadsafeFunctionCallMode},
-    CallContext, Env, JsFunction, JsNumber, JsObject, JsString, JsStringUtf8, JsUndefined,
+    CallContext, Env, JsNumber, JsObject, JsString, 
     Result as JsResult,
 };
-use std::{convert::TryInto, thread, time::Duration};
+use std::{convert::TryInto};
 
 #[js_function(1)] // ------> arguments length
 fn fibonacci(ctx: CallContext) -> JsResult<JsNumber> {
