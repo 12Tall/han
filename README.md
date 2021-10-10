@@ -15,4 +15,10 @@ node test.js  # 测试
 Node 本地模块可以实现多线程，也能保证本地代码并行，但是，如果在线程中试图调用Js 函数，那么无论这个函数是否是线程安全的，都会阻塞进程。即，某一时刻，Js 进程中最多只能执行一个Js 的函数。估计C++ 中也是这样，不然的话早就有人做出来这种功能了。  
 > 启用线程安全功能需要至少启用tokio 包  
 
-
+```bash
+git add .
+git commit -m "test"
+git push -u origin refs/heads/master
+# push 到tag  
+git push -u origin reds/tags/tag_name
+```
